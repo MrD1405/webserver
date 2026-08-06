@@ -2,15 +2,19 @@ import socket
 
 class WrongHTTPFormat(Exception):
     pass
-def parse_request_stream(request_stream):
+def parse_http_headers(structure):
     try:
-        http_request=request_stream.split("\r\n")
+        http_request=structure.split("\r\n")
         start_line = http_request[0].split(' ')
         http_method = start_line[0]
-        request_target=start_line[1]       
-        print(request_target)
-        print(http_method)
-        print(http_request)
+        request_target=start_line[1]
+        headers={}
+        for entry in http_request[1:]:
+            header_key , header_value = entry.split(':',1)
+            header_key=header_key.lower()
+            header_value=header_value.strip()
+            headers[header_key]=header_value
+        return http_method , request_target , headers
     except Exception as e:
         raise WrongHTTPFormat
 
