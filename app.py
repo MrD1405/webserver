@@ -18,6 +18,7 @@ def parse_http_headers(structure):
     except Exception as e:
         raise WrongHTTPFormat
 
+#continuously listen to tcp connection on a specific port
 server=socket.socket(socket.AF_INET,socket.SOCK_STREAM)
 server.setsockopt(socket.SOL_SOCKET,socket.SO_REUSEADDR,1)
 server.bind(('127.0.0.1',8199))
@@ -27,6 +28,7 @@ while True:
     try:
         client_connection , client_address = server.accept()
         request_stream =b""
+        #accept until the headers are not complete
         while b"\r\n\r\n" not in request_stream:
             chunk = client_connection.recv(1024)
             if not chunk :
@@ -34,6 +36,7 @@ while True:
             request_stream+=chunk
         http_structure , _ , body = request_stream.partition(b'\r\n\r\n')
         http_method , request_target , headers = parse_http_headers(http_structure.decode("utf-8"))
+        #based on content length , listen and append to the body
         expected_length = int(headers.get('content-length',0))
         while expected_length > 0 :
             chunk = client_connection.recv(1024)
@@ -46,6 +49,7 @@ while True:
 
     Hello World
     """
+        #send reply and close all connections 
         client_connection.sendall(http_response)
         client_connection.close()
     except Exception as e:
