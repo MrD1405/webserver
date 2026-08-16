@@ -28,7 +28,6 @@ while True:
         client_connection , client_address = server.accept()
         request_stream =b""
         while b"\r\n\r\n" not in request_stream:
-            print("loop through first")
             chunk = client_connection.recv(1024)
             if not chunk :
                 break
@@ -37,15 +36,11 @@ while True:
         http_method , request_target , headers = parse_http_headers(http_structure.decode("utf-8"))
         expected_length = int(headers.get('content-length',0))
         while expected_length > 0 :
-            print("loop thru second")
             chunk = client_connection.recv(1024)
-            print(chunk)
             if not chunk:
                 break
-            body+=request_stream
+            body+=chunk
             expected_length=expected_length-len(chunk)
-            print(f"expec len {expected_length}")
-        print("its here")
         http_response=b"""\
     HTTP/1.1 200 OK
 
