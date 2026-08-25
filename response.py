@@ -19,7 +19,7 @@ class HTTPResponse:
         status_line = f"HTTP/1.1 {self.status_code} {reason}"
         self.headers["Content-Length"]=str(len(self.body))
         headers_str = "".join(f"{k}: {v}\r\n" for k,v in self.headers.items())
-        header_byte_format=f"{status_line}{headers_str}\r\n".encode('utf-8')
+        header_byte_format=f"{status_line}\r\n{headers_str}\r\n".encode('utf-8')
         return header_byte_format + self.body
     
         
